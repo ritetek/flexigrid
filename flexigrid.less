@@ -1,0 +1,119 @@
+//
+// FlexiGrid
+// --------------------------------------------------
+
+#flexigrid (
+    @base-container:    100%,
+    @base-gutter:       10,
+    @base-column:       40,
+    @base-columns:      24
+  ) {
+
+  @base-width:          (@base-column * @base-columns) - @base-gutter; 
+  @gutter:              @base-gutter / @base-width;
+  @gutterCol-ratio:     @base-column / @base-gutter;
+  
+  .container () {
+
+    .container (@base-container) when (ispercentage(@base-container)) {
+      width: auto;
+      padding-right:  @gutter * 100%;
+      padding-left:   @gutter * 100%;
+    }
+    .container (@base-container) when (ispixel(@base-container)) {
+      position: relative;
+      width: @base-container;
+      margin: 0 auto;
+    }
+    .container(@base-container);
+  }
+
+  .column (
+      @colSpan:        0,
+      @colSpan-parent: 24,
+      @colPrepend:     0,
+      @colAppend:      0,
+      @colPush:        0,
+      @colPull:        0
+    ) {
+
+    @baseWidth:             (@base-column * @colSpan) - @base-gutter;
+    @baseWidth-parent:      (@base-column * @colSpan-parent) - @base-gutter;
+
+    @gutter-percentage:     (@base-width / @baseWidth-parent) * @gutter * 100%;
+    @gutter-pixel:          @base-gutter * 1px;
+
+    @width-percentage:      @baseWidth / @baseWidth-parent * 100%;
+    @width-pixel:           @baseWidth * 1px;
+
+    // Gutter Widths
+    // -------------
+    .colGutter (@colSpan) when (ispercentage(@base-container)) {
+      margin-right: @gutter-percentage;
+    }
+    .colGutter (@colSpan) when (ispixel(@base-container)) {
+      margin-right: @gutter-pixel;
+    }
+    .colGutter (@colSpan) { }
+
+    // Column Widths
+    // -------------
+    .colWidth (@colSpan) when (ispercentage(@base-container)) {
+      width: @baseWidth / @baseWidth-parent * 100%;
+    }
+    .colWidth (@colSpan) when (ispixel(@base-container)) {
+      width: @baseWidth * 1px;
+    }
+    .colWidth (@colSpan) { }
+
+    // Offset (Push & Pull)
+    // --------------------
+    .colOffset (@colOffset) when (ispercentage(@base-container)) and not (@colOffset = 0) {
+        margin-left: @colOffset * (@gutter-percentage * @gutterCol-ratio);
+    }
+    .colOffset (@colOffset) when (ispixel(@base-container)) and not (@colOffset = 0) {
+        margin-left: @colOffset * (@gutter-pixel * @gutterCol-ratio);
+    }
+    .colOffset (@colOffset) { }
+
+    // Modal Offset
+    // ------------
+    .modalOffset (@colSpan) when (ispercentage(@base-container)) {
+      margin-left: (@baseWidth / @baseWidth-parent * 100%) / 2 * -1;
+    }
+    .modalOffset (@colSpan) when (ispixel(@base-container)) {
+      margin-left: (@baseWidth * 1px) / 2 * -1;
+    }
+    .modalOffset (@colSpan) { }
+
+    // Append
+    // ------
+    .colAppend (@colAppend) when (ispercentage(@base-container)) and not (@colAppend = 0) {
+      padding-right: @colAppend * (@gutter-percentage * @gutterCol-ratio);
+    }
+    .colAppend (@colAppend) when (ispixel(@base-container)) and not (@colAppend = 0) {
+      padding-right: @colAppend * (@gutter-pixel * @gutterCol-ratio);
+    }
+    .colAppend (@colAppend) { }
+
+    // Prepend
+    // -------
+    .colPrepend (@colPrepend) when (ispercentage(@base-container)) and not (@colPrepend = 0) {
+      padding-left: @colPrepend * (@gutter-percentage * @gutterCol-ratio);
+    }
+    .colPrepend (@colPrepend) when (ispixel(@base-container)) and not (@colPrepend = 0) {
+      padding-left: @colPrepend * (@gutter-pixel * @gutterCol-ratio);
+    }
+    .colPrepend (@colPrepend) { }
+
+
+    float: left;
+    .colWidth(@colSpan);
+    .colGutter(@colSpan);
+    .colOffset(@colPush - @colPull);
+    .colAppend(@colAppend);
+    .colPrepend(@colPrepend);
+    &.last  { margin-right: 0 }
+    &.modal { .modalOffset(@colSpan) }
+  }
+}
